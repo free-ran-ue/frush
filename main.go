@@ -6,6 +6,7 @@ import (
 
 	"github.com/chzyer/readline"
 	"github.com/free-ran-ue/frush/constant"
+	"github.com/free-ran-ue/frush/subscriber"
 )
 
 func printFrush() {
@@ -17,6 +18,17 @@ func printFrush() {
 ======██║     ██║  ██║╚██████╔╝███████║██║  ██║======
 ======╚═╝     ╚═╝  ╚═╝ ╚═════╝ ╚══════╝╚═╝  ╚═╝======
 =====================================================
+`)
+}
+
+func usage() {
+	fmt.Print(`
+Commands:
+	help    Show help
+	exit    Exit
+
+	add    Add a subscriber
+	delete Delete a subscriber
 `)
 }
 
@@ -32,6 +44,8 @@ func main() {
 			panic(err)
 		}
 	}()
+
+	// frushManager := manager.NewManager()
 
 	for {
 		line, err := rl.Readline()
@@ -49,10 +63,25 @@ func main() {
 		}
 
 		switch cmds[0] {
+		case constant.CMD_HELP:
+			usage()
 		case constant.CMD_EXIT:
 			return
+		case constant.CMD_ADD_SUBSCRIBER:
+			if err := subscriber.AddSubscriber(constant.TEMPLATE_CONSOLE_ACCOUNT_JSON, constant.TEMPLATE_SUBSCRIBER_JSON); err != nil {
+				fmt.Println(err)
+			} else {
+				fmt.Println(constant.OUTPUT_SUCCESS)
+			}
+		case constant.CMD_DELETE_SUBSCRIBER:
+			if err := subscriber.DeleteSubscriber(constant.TEMPLATE_CONSOLE_ACCOUNT_JSON, constant.TEMPLATE_SUBSCRIBER_JSON); err != nil {
+				fmt.Println(err)
+			} else {
+				fmt.Println(constant.OUTPUT_SUCCESS)
+			}
 		default:
 			fmt.Println(fmt.Sprintf(constant.SYSTEM_HINT_UNKNOWN_CMD, cmds[0]))
+			usage()
 		}
 	}
 }

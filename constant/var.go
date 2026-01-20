@@ -6,3 +6,8 @@ var (
 	TEMPLATE_GNB_YAML             = "./template/gnb_template.yaml"
 	TEMPLATE_UE_YAML              = "./template/ue_template.yaml"
 )
+
+var (
+	CONSOLE_IP   = "127.0.0.1"
+	CONSOLE_PORT = 5000
+)
