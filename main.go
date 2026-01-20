@@ -5,6 +5,7 @@ import (
 	"strings"
 
 	"github.com/chzyer/readline"
+	"github.com/free-ran-ue/frush/constant"
 )
 
 func printFrush() {
@@ -22,17 +23,21 @@ func printFrush() {
 func main() {
 	printFrush()
 
-	rl, err := readline.New(CMD_START)
+	rl, err := readline.New(constant.CMD_START)
 	if err != nil {
 		panic(err)
 	}
-	defer rl.Close()
+	defer func() {
+		if err := rl.Close(); err != nil {
+			panic(err)
+		}
+	}()
 
 	for {
 		line, err := rl.Readline()
 		if err != nil {
 			if err == readline.ErrInterrupt {
-				fmt.Println(SYSTEM_HINT_CTRL_C_EXIT)
+				fmt.Println(constant.SYSTEM_HINT_CTRL_C_EXIT)
 				continue
 			}
 			panic(err)
@@ -44,10 +49,10 @@ func main() {
 		}
 
 		switch cmds[0] {
-		case CMD_EXIT:
+		case constant.CMD_EXIT:
 			return
 		default:
-			fmt.Println(fmt.Sprintf(SYSTEM_HINT_UNKNOWN_CMD, cmds[0]))
+			fmt.Println(fmt.Sprintf(constant.SYSTEM_HINT_UNKNOWN_CMD, cmds[0]))
 		}
 	}
 }
