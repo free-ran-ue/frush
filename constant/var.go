@@ -10,4 +10,7 @@ var (
 var (
 	CONSOLE_IP   = "127.0.0.1"
 	CONSOLE_PORT = 5000
+
+	N2_IP   = "127.0.0.18"
+	N2_PORT = 38412
 )

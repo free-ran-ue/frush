@@ -6,6 +6,7 @@ const (
 	CMD_EXIT              = "exit"
 	CMD_ADD_SUBSCRIBER    = "add"
 	CMD_DELETE_SUBSCRIBER = "delete"
+	CMD_GNB               = "gnb"
 )
 
 const (
@@ -27,4 +28,14 @@ const (
 	CONSOLE_ADD_SUBSCRIBER_PATH = "/api/subscriber/imsi-%s/%s"
 	CONSOLE_ACCESS_TOKEN        = "access_token"
 	CONSOLE_TOKEN               = "Token"
+)
+
+type ContextStatus string
+
+const (
+	Context_Running  ContextStatus = "running"
+	Context_Stopped  ContextStatus = "stopped"
+	Context_Starting ContextStatus = "starting"
+	Context_Stopping ContextStatus = "stopping"
+	Context_Error    ContextStatus = "error"
 )
