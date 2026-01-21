@@ -1,10 +1,7 @@
 package manager
 
 import (
-	"context"
-
 	"github.com/free-ran-ue/free-ran-ue/v2/model"
-	"github.com/free-ran-ue/frush/constant"
 )
 
 type manager struct {
@@ -19,14 +16,10 @@ func NewManager(gnbConfig model.GnbConfig, ueConfig model.UeConfig) *manager {
 	}
 }
 
-func (m *manager) GnbStart(ctx context.Context) error {
-	return m.gnbContext.start(ctx)
+func (m *manager) GnbContext() *gnbContext {
+	return m.gnbContext
 }
 
-func (m *manager) GnbStop() {
-	m.gnbContext.stop()
-}
-
-func (m *manager) GnbStatus() constant.ContextStatus {
-	return m.gnbContext.getStatus()
+func (m *manager) UeContext() *ueContext {
+	return m.ueContext
 }

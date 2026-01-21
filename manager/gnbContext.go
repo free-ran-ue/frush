@@ -12,6 +12,7 @@ import (
 
 type gnbContext struct {
 	gnb    *gnb.Gnb
+	name   string
 	status constant.ContextStatus
 }
 
@@ -19,34 +20,39 @@ func newGnbContext(gnbConfig model.GnbConfig) *gnbContext {
 	logger := logger.NewGnbLogger(loggergoUtil.LogLevelString(gnbConfig.Logger.Level), "", true)
 	return &gnbContext{
 		gnb:    gnb.NewGnb(&gnbConfig, &logger),
+		name:   gnbConfig.Gnb.GnbName,
 		status: constant.Context_Stopped,
 	}
 }
 
-func (c *gnbContext) getStatus() constant.ContextStatus {
+func (c *gnbContext) GetName() string {
+	return c.name
+}
+
+func (c *gnbContext) GetStatus() constant.ContextStatus {
 	return c.status
 }
 
-func (c *gnbContext) setStatus(status constant.ContextStatus) {
+func (c *gnbContext) SetStatus(status constant.ContextStatus) {
 	c.status = status
 }
 
-func (c *gnbContext) start(ctx context.Context) error {
-	c.setStatus(constant.Context_Starting)
+func (c *gnbContext) Start(ctx context.Context) error {
+	c.SetStatus(constant.Context_Starting)
 
 	if err := c.gnb.Start(ctx); err != nil {
-		c.setStatus(constant.Context_Error)
+		c.SetStatus(constant.Context_Error)
 		return err
 	}
-	c.setStatus(constant.Context_Running)
+	c.SetStatus(constant.Context_Running)
 
 	return nil
 }
 
-func (c *gnbContext) stop() {
-	c.setStatus(constant.Context_Stopping)
+func (c *gnbContext) Stop() {
+	c.SetStatus(constant.Context_Stopping)
 
 	c.gnb.Stop()
 
-	c.setStatus(constant.Context_Stopped)
+	c.SetStatus(constant.Context_Stopped)
 }

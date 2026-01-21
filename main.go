@@ -33,6 +33,10 @@ Commands:
 
 	add    Add a subscriber
 	delete Delete a subscriber
+
+	status  Show the status of gNB and UE
+	gnb     Start gNB
+	
 `)
 }
 
@@ -56,6 +60,15 @@ func getConfig(gnbConfigPath, ueConfigPath string) (*model.GnbConfig, *model.UeC
 	return &gnbConfig, &ueConfig, nil
 }
 
+func printStatusTable(gnbName, ueName string, gnbStatus, ueStatus constant.ContextStatus) {
+	fmt.Println("┌──────────┬─────────────────────┐")
+	fmt.Println("│ Name     │ State               │")
+	fmt.Println("├──────────┼─────────────────────┤")
+	fmt.Printf("│ %-8s │ %-19s │\n", gnbName, gnbStatus)
+	fmt.Printf("│ %-8s │ %-19s │\n", ueName, ueStatus)
+	fmt.Println("└──────────┴─────────────────────┘")
+}
+
 func main() {
 	printFrush()
 
@@ -74,8 +87,8 @@ func main() {
 		panic(err)
 	}
 	defer func() {
-		if frushManager.GnbStatus() == constant.Context_Running {
-			frushManager.GnbStop()
+		if frushManager.GnbContext().GetStatus() == constant.Context_Running {
+			frushManager.GnbContext().Stop()
 		}
 		if err := rl.Close(); err != nil {
 			panic(err)
@@ -114,8 +127,10 @@ func main() {
 			} else {
 				fmt.Println(constant.OUTPUT_SUCCESS)
 			}
+		case constant.CMD_STATUS:
+			printStatusTable(frushManager.GnbContext().GetName(), "", frushManager.GnbContext().GetStatus(), "")
 		case constant.CMD_GNB:
-			if err := frushManager.GnbStart(ctx); err != nil {
+			if err := frushManager.GnbContext().Start(ctx); err != nil {
 				fmt.Println(err)
 			} else {
 				fmt.Println(constant.OUTPUT_SUCCESS)

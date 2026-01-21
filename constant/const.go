@@ -7,6 +7,7 @@ const (
 	CMD_ADD_SUBSCRIBER    = "add"
 	CMD_DELETE_SUBSCRIBER = "delete"
 	CMD_GNB               = "gnb"
+	CMD_STATUS            = "status"
 )
 
 const (
