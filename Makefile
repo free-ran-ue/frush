@@ -3,7 +3,7 @@
 .DEFAULT_GOAL := build
 
 build:
-	go build -o bin/frush main.go
+	go build -o frush main.go
 
 clean:
-	rm -rf bin
+	rm -rf frush
