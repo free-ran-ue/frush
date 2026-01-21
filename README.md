@@ -1,6 +1,6 @@
 # frush
 
-A quick and convenience bash type interface for testing core network.
+frush (free-ran-ue + shell) is a Bash-like interactive shell that provides a convenient interface for operating free-ran-ue and validating 5G core network, free5GC, behavior.
 
 ## free5GC Setting
 
