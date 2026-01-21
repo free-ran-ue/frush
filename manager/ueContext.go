@@ -79,7 +79,10 @@ func (c *ueContext) Ping(dn string) error {
 
 	receiveIcmpReplyChan := make(chan bool, 1)
 	go func() {
-		ranDataPlaneConn.SetReadDeadline(time.Now().Add(5 * time.Second))
+		if err := ranDataPlaneConn.SetReadDeadline(time.Now().Add(5 * time.Second)); err != nil {
+			receiveIcmpReplyChan <- false
+			return
+		}
 		icmpEchoReply := make([]byte, 1024)
 		if _, err := ranDataPlaneConn.Read(icmpEchoReply); err != nil {
 			receiveIcmpReplyChan <- false
