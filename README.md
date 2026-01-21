@@ -1,10 +1,14 @@
 # frush
 
+![frush](./frush.png)
+
 frush (free-ran-ue + shell) is a Bash-like interactive shell that provides a convenient interface for operating free-ran-ue and validating 5G core network, free5GC, behavior.
 
 ## free5GC Setting
 
 Set N3 IP in `smfcfg.yaml` and `upfcfg.yaml` as `127.0.0.1`.
+
+(Only these two fields shoud be modified!)
 
 ## Build frush
 
