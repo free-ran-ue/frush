@@ -1,6 +1,12 @@
 # frush
 
-![frush](./frush.png)
+<p align="center">
+<img src="./frush.png" alt="frush" /><br/>
+<a href="https://github.com/free-ran-ue/frush/releases"><img src="https://img.shields.io/github/v/release/free-ran-ue/frush?color=orange" alt="Release"/></a>
+<a href="https://github.com/free-ran-ue/frush/blob/main/LICENSE"><img src="https://img.shields.io/github/license/free-ran-ue/frush?color=blue" alt="License"/></a>
+<a href="https://www.codefactor.io/repository/github/free-ran-ue/frush"><img src="https://www.codefactor.io/repository/github/free-ran-ue/frush/badge" alt="CodeFactor" /></a>
+<a href="https://goreportcard.com/badge/github.com/free-ran-ue/frush"><img src="https://goreportcard.com/badge/github.com/free-ran-ue/frush" alt="goReport"/></a>
+</p>
 
 frush (free-ran-ue + shell) is a Bash-like interactive shell that provides a convenient interface for operating free-ran-ue and validating 5G core network, free5GC, behavior.
 
