@@ -51,5 +51,3 @@ require (
 	google.golang.org/protobuf v1.36.9 // indirect
 	gopkg.in/yaml.v2 v2.4.0 // indirect
 )
-
-replace github.com/free-ran-ue/free-ran-ue/v2 => ../free-ran-ue
