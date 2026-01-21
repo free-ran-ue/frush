@@ -1,7 +1,7 @@
 gnb:
   amfN2Ip: "127.0.0.18" # AMF N2 IP at core network
   ranN2Ip: "127.0.0.18" # RAN N2 IP for connecting to AMF
-  upfN3Ip: "127.0.0.8" # UPF N3 IP at core network
+  upfN3Ip: "127.0.0.1" # UPF N3 IP at core network
   ranN3Ip: "127.0.0.8" # RAN N3 IP for connecting to UPF
 
   ranControlPlaneIp: "127.0.0.50" # RAN Control Plane IP open for UE connection
@@ -10,7 +10,7 @@ gnb:
   amfN2Port: 38412 # AMF N2 SCTP port at core network
   ranN2Port: 38413 # RAN N2 SCTP port for connecting to AMF
   upfN3Port: 2152 # UPF N3 GTP-U port at core network
-  ranN3Port: 2153 # RAN N3 GTP-U port for connecting to UPF
+  ranN3Port: 2152 # RAN N3 GTP-U port for connecting to UPF
 
   ranControlPlanePort: 31413 # RAN Control Plane port open for UE connection
   ranDataPlanePort: 31414 # RAN Data Plane port open for UE connection

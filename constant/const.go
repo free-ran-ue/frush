@@ -1,5 +1,7 @@
 package constant
 
+import "time"
+
 const (
 	CMD_START             = "frush > "
 	CMD_HELP              = "help"
@@ -10,10 +12,13 @@ const (
 	CMD_STATUS            = "status"
 	CMD_UE_REGISTER       = "reg"
 	CMD_UE_DE_REGISTER    = "dereg"
+	CMD_PING              = "ping"
 )
 
 const (
 	OUTPUT_SUCCESS = "==> Success"
+	OUTPUT_FAILURE = "==> Fail"
+	LOG_WAIT_TIME  = 300 * time.Millisecond
 )
 
 const (
@@ -48,4 +53,9 @@ const (
 	CONTEXT_STATUS_UE_DE_REGISTERED  ContextStatus = "de-registered"
 	CONTEXT_STATUS_UE_DE_REGISTERING ContextStatus = "de-registering"
 	CONTEXT_STATUS_UE_ERROR          ContextStatus = "error"
+)
+
+const (
+	DN_ONE   = "1.1.1.1"
+	DN_EIGHT = "8.8.8.8"
 )

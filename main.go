@@ -40,6 +40,8 @@ Commands:
 	gnb     Start gNB
 	reg     Register UE
 	dereg   De-register UE
+
+	ping {dn}   Ping the DN, if dn is not provided, ping 1.1.1.1 and 8.8.8.8
 `)
 }
 
@@ -116,11 +118,11 @@ func main() {
 	defer func() {
 		cancel()
 
-		if frushManager.GnbContext().GetStatus() == constant.CONTEXT_STATUS_GNB_RUNNING {
-			frushManager.GnbContext().Stop()
-		}
 		if frushManager.UeContext().GetStatus() == constant.CONTEXT_STATUS_UE_REGISTERED {
 			frushManager.UeContext().Stop()
+		}
+		if frushManager.GnbContext().GetStatus() == constant.CONTEXT_STATUS_GNB_RUNNING {
+			frushManager.GnbContext().Stop()
 		}
 		if err := rl.Close(); err != nil {
 			panic(err)
@@ -149,12 +151,14 @@ func main() {
 			return
 		case constant.CMD_ADD_SUBSCRIBER:
 			if err := subscriber.AddSubscriber(constant.TEMPLATE_CONSOLE_ACCOUNT_JSON, constant.TEMPLATE_SUBSCRIBER_JSON); err != nil {
+				fmt.Println(constant.OUTPUT_FAILURE)
 				fmt.Println(err)
 			} else {
 				fmt.Println(constant.OUTPUT_SUCCESS)
 			}
 		case constant.CMD_DELETE_SUBSCRIBER:
 			if err := subscriber.DeleteSubscriber(constant.TEMPLATE_CONSOLE_ACCOUNT_JSON, constant.TEMPLATE_SUBSCRIBER_JSON); err != nil {
+				fmt.Println(constant.OUTPUT_FAILURE)
 				fmt.Println(err)
 			} else {
 				fmt.Println(constant.OUTPUT_SUCCESS)
@@ -163,22 +167,55 @@ func main() {
 			printStatusTable(frushManager.GnbContext().GetName(), frushManager.UeContext().GetImsi(), frushManager.GnbContext().GetStatus(), frushManager.UeContext().GetStatus())
 		case constant.CMD_GNB:
 			if err := frushManager.GnbContext().Start(ctx); err != nil {
+				fmt.Println(constant.OUTPUT_FAILURE)
 				fmt.Println(err)
 			} else {
-				time.Sleep(100 * time.Millisecond)
+				time.Sleep(constant.LOG_WAIT_TIME)
 				fmt.Println(constant.OUTPUT_SUCCESS)
 			}
 		case constant.CMD_UE_REGISTER:
 			if err := frushManager.UeContext().Start(ctx); err != nil {
+				fmt.Println(constant.OUTPUT_FAILURE)
 				fmt.Println(err)
 			} else {
-				time.Sleep(200 * time.Millisecond)
+				time.Sleep(constant.LOG_WAIT_TIME)
 				fmt.Println(constant.OUTPUT_SUCCESS)
 			}
 		case constant.CMD_UE_DE_REGISTER:
 			frushManager.UeContext().Stop()
-			time.Sleep(100 * time.Millisecond)
+			time.Sleep(constant.LOG_WAIT_TIME)
 			fmt.Println(constant.OUTPUT_SUCCESS)
+		case constant.CMD_PING:
+			switch len(cmds) {
+			case 1:
+				fmt.Printf("Pinging %s...\n", constant.DN_ONE)
+				if err := frushManager.UeContext().Ping(constant.DN_ONE); err != nil {
+					fmt.Println(constant.OUTPUT_FAILURE)
+					fmt.Println(err)
+				} else {
+					fmt.Println(constant.OUTPUT_SUCCESS)
+				}
+				fmt.Printf("Pinging %s...\n", constant.DN_EIGHT)
+				if err := frushManager.UeContext().Ping(constant.DN_EIGHT); err != nil {
+					fmt.Println(constant.OUTPUT_FAILURE)
+					fmt.Println(err)
+				} else {
+					fmt.Println(constant.OUTPUT_SUCCESS)
+				}
+			case 2:
+				if err := fruUtil.ValidateIp(cmds[1]); err != nil {
+					fmt.Println(constant.OUTPUT_FAILURE)
+					fmt.Println(err)
+				} else {
+					fmt.Printf("Pinging %s...\n", cmds[1])
+					if err := frushManager.UeContext().Ping(cmds[1]); err != nil {
+						fmt.Println(constant.OUTPUT_FAILURE)
+						fmt.Println(err)
+					} else {
+						fmt.Println(constant.OUTPUT_SUCCESS)
+					}
+				}
+			}
 		default:
 			fmt.Println(fmt.Sprintf(constant.SYSTEM_HINT_UNKNOWN_CMD, cmds[0]))
 			usage()
