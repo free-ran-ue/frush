@@ -21,7 +21,7 @@ func newGnbContext(gnbConfig model.GnbConfig) *gnbContext {
 	return &gnbContext{
 		gnb:    gnb.NewGnb(&gnbConfig, &logger),
 		name:   gnbConfig.Gnb.GnbName,
-		status: constant.Context_Stopped,
+		status: constant.CONTEXT_STATUS_GNB_STOPPED,
 	}
 }
 
@@ -38,21 +38,21 @@ func (c *gnbContext) SetStatus(status constant.ContextStatus) {
 }
 
 func (c *gnbContext) Start(ctx context.Context) error {
-	c.SetStatus(constant.Context_Starting)
+	c.SetStatus(constant.CONTEXT_STATUS_GNB_STARTING)
 
 	if err := c.gnb.Start(ctx); err != nil {
-		c.SetStatus(constant.Context_Error)
+		c.SetStatus(constant.CONTEXT_STATUS_GNB_ERROR)
 		return err
 	}
-	c.SetStatus(constant.Context_Running)
+	c.SetStatus(constant.CONTEXT_STATUS_GNB_RUNNING)
 
 	return nil
 }
 
 func (c *gnbContext) Stop() {
-	c.SetStatus(constant.Context_Stopping)
+	c.SetStatus(constant.CONTEXT_STATUS_GNB_STOPPING)
 
 	c.gnb.Stop()
 
-	c.SetStatus(constant.Context_Stopped)
+	c.SetStatus(constant.CONTEXT_STATUS_GNB_STOPPED)
 }

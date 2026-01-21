@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"os"
 	"strings"
+	"time"
 
 	"github.com/chzyer/readline"
 	"github.com/free-ran-ue/free-ran-ue/v2/model"
@@ -37,7 +38,8 @@ Commands:
 
 	status  Show the status of gNB and UE
 	gnb     Start gNB
-	
+	reg     Register UE
+	dereg   De-register UE
 `)
 }
 
@@ -61,13 +63,28 @@ func getConfig(gnbConfigPath, ueConfigPath string) (*model.GnbConfig, *model.UeC
 	return &gnbConfig, &ueConfig, nil
 }
 
-func printStatusTable(gnbName, ueName string, gnbStatus, ueStatus constant.ContextStatus) {
-	fmt.Println("┌──────────┬─────────────────────┐")
-	fmt.Println("│ Name     │ State               │")
-	fmt.Println("├──────────┼─────────────────────┤")
-	fmt.Printf("│ %-8s │ %-19s │\n", gnbName, gnbStatus)
-	fmt.Printf("│ %-8s │ %-19s │\n", ueName, ueStatus)
-	fmt.Println("└──────────┴─────────────────────┘")
+func printStatusTable(gnbName, ueImsi string, gnbStatus, ueStatus constant.ContextStatus) {
+	nameHeader := "Name"
+	maxNameLen := len(nameHeader)
+
+	if len(gnbName) > maxNameLen {
+		maxNameLen = len(gnbName)
+	}
+	if len(ueImsi) > maxNameLen {
+		maxNameLen = len(ueImsi)
+	}
+
+	nameWidth := maxNameLen + 2
+	stateWidth := 19
+
+	fmt.Println("┌" + strings.Repeat("─", nameWidth) + "┬" + strings.Repeat("─", stateWidth) + "┐")
+	fmt.Printf("│ %-*s│ %-*s│\n", nameWidth-1, nameHeader, stateWidth-1, "State")
+	fmt.Println("├" + strings.Repeat("─", nameWidth) + "┼" + strings.Repeat("─", stateWidth) + "┤")
+
+	fmt.Printf("│ %-*s│ %-*s│\n", nameWidth-1, gnbName, stateWidth-1, gnbStatus)
+	fmt.Printf("│ %-*s│ %-*s│\n", nameWidth-1, ueImsi, stateWidth-1, ueStatus)
+
+	fmt.Println("└" + strings.Repeat("─", nameWidth) + "┴" + strings.Repeat("─", stateWidth) + "┘")
 }
 
 func checkRoot() {
@@ -97,8 +114,13 @@ func main() {
 		panic(err)
 	}
 	defer func() {
-		if frushManager.GnbContext().GetStatus() == constant.Context_Running {
+		cancel()
+
+		if frushManager.GnbContext().GetStatus() == constant.CONTEXT_STATUS_GNB_RUNNING {
 			frushManager.GnbContext().Stop()
+		}
+		if frushManager.UeContext().GetStatus() == constant.CONTEXT_STATUS_UE_REGISTERED {
+			frushManager.UeContext().Stop()
 		}
 		if err := rl.Close(); err != nil {
 			panic(err)
@@ -138,13 +160,25 @@ func main() {
 				fmt.Println(constant.OUTPUT_SUCCESS)
 			}
 		case constant.CMD_STATUS:
-			printStatusTable(frushManager.GnbContext().GetName(), "", frushManager.GnbContext().GetStatus(), "")
+			printStatusTable(frushManager.GnbContext().GetName(), frushManager.UeContext().GetImsi(), frushManager.GnbContext().GetStatus(), frushManager.UeContext().GetStatus())
 		case constant.CMD_GNB:
 			if err := frushManager.GnbContext().Start(ctx); err != nil {
 				fmt.Println(err)
 			} else {
+				time.Sleep(100 * time.Millisecond)
 				fmt.Println(constant.OUTPUT_SUCCESS)
 			}
+		case constant.CMD_UE_REGISTER:
+			if err := frushManager.UeContext().Start(ctx); err != nil {
+				fmt.Println(err)
+			} else {
+				time.Sleep(200 * time.Millisecond)
+				fmt.Println(constant.OUTPUT_SUCCESS)
+			}
+		case constant.CMD_UE_DE_REGISTER:
+			frushManager.UeContext().Stop()
+			time.Sleep(100 * time.Millisecond)
+			fmt.Println(constant.OUTPUT_SUCCESS)
 		default:
 			fmt.Println(fmt.Sprintf(constant.SYSTEM_HINT_UNKNOWN_CMD, cmds[0]))
 			usage()

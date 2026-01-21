@@ -1,6 +1,6 @@
 ue:
-  ranControlPlaneIp: "10.0.2.1" # RAN Control Plane IP open for UE connection
-  ranDataPlaneIp: "10.0.2.1" # RAN Data Plane IP open for UE connection
+  ranControlPlaneIp: "127.0.0.50" # RAN Control Plane IP open for UE connection
+  ranDataPlaneIp: "127.0.0.50" # RAN Data Plane IP open for UE connection
 
   ranControlPlanePort: 31413 # RAN Control Plane port open for UE connection
   ranDataPlanePort: 31414 # RAN Data Plane port open for UE connection
