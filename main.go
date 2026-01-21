@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"fmt"
+	"os"
 	"strings"
 
 	"github.com/chzyer/readline"
@@ -69,7 +70,16 @@ func printStatusTable(gnbName, ueName string, gnbStatus, ueStatus constant.Conte
 	fmt.Println("└──────────┴─────────────────────┘")
 }
 
+func checkRoot() {
+	if os.Geteuid() != 0 {
+		fmt.Println("Please run as root: sudo ./frush")
+		os.Exit(1)
+	}
+}
+
 func main() {
+	checkRoot()
+
 	printFrush()
 
 	gnbConfig, ueConfig, err := getConfig(constant.TEMPLATE_GNB_YAML, constant.TEMPLATE_UE_YAML)
