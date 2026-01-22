@@ -7,7 +7,7 @@ import (
 
 	fruUtil "github.com/free-ran-ue/free-ran-ue/v2/util"
 	"github.com/free-ran-ue/frush/constant"
-	"github.com/free-ran-ue/frush/util"
+	"github.com/free-ran-ue/util"
 )
 
 func getConsoleLoginToken(consoleAccountTemplatePath string) (string, error) {
