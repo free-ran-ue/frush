@@ -10,8 +10,8 @@ on:
 env:
   FREE5GC_REPO_URL: https://github.com/free5gc/free5gc.git
   FREE5GC_DIR: free5gc
-  SMF_CONFIG: ${{ env.FREE5GC_DIR }}/config/smfcfg.yaml
-  UPF_CONFIG: ${{ env.FREE5GC_DIR }}/config/upfcfg.yaml
+  SMF_CONFIG: free5gc/config/smfcfg.yaml
+  UPF_CONFIG: free5gc/config/upfcfg.yaml
 
 jobs:
   integration-test:
