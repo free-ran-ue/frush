@@ -36,7 +36,7 @@ make
 ## Run frush
 
 ```bash
-sudo ./frush
+./frush
 ```
 
 | frush CMD | Args | Description |
