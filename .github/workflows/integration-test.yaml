@@ -1,0 +1,102 @@
+name: Integration Test
+
+on:
+  # push:
+    # branches: [ main ]
+  pull_request:
+    branches: [ main ]
+  workflow_dispatch:
+
+env:
+  FREE5GC_REPO_URL: https://github.com/free5gc/free5gc.git
+  FREE5GC_DIR: free5gc
+  SMF_CONFIG: free5gc/config/smfcfg.yaml
+  UPF_CONFIG: free5gc/config/upfcfg.yaml
+
+jobs:
+  integration-test:
+    runs-on: self-hosted
+
+    steps:
+      - name: Checkout frush repository
+        uses: actions/checkout@v4
+
+      - name: Check Commands
+        run: |
+          go version
+          yarn -v
+
+      - name: Clone free5GC, Build and Configure N3 IP
+        run: |
+          git clone -j `nproc` --recursive ${{ env.FREE5GC_REPO_URL }} ${{ env.FREE5GC_DIR }}
+          pushd ${{ env.FREE5GC_DIR }}
+          make all
+          popd
+          ./test/n3_ip_config.sh ${{ env.SMF_CONFIG }}
+          ./test/n3_ip_config.sh ${{ env.UPF_CONFIG }}
+
+      - name: Build frush
+        run: |
+          make
+
+      - name: Start free5GC
+        run: |
+          cd ${{ env.FREE5GC_DIR }}
+          ./run.sh &
+          sleep 5
+          ./webconsole/bin/webconsole &
+          sleep 5
+
+      - name: 01 General Test
+        run: |
+          ./frush < ./test/01-general/input.cmd > ./test/01-general/output.txt
+          if ! diff ./test/01-general/output.txt ./test/01-general/expect.txt; then
+            echo "=== Actual output ==="
+            cat ./test/01-general/output.txt
+            echo "=== Expected output ==="
+            cat ./test/01-general/expect.txt
+            exit 1
+          fi
+
+      - name: 02 Duplicate Action Test
+        run: |
+          ./frush < ./test/02-duplicate-action/input.cmd > ./test/02-duplicate-action/output.txt
+          if ! diff ./test/02-duplicate-action/output.txt ./test/02-duplicate-action/expect.txt; then
+            echo "=== Actual output ==="
+            cat ./test/02-duplicate-action/output.txt
+            echo "=== Expected output ==="
+            cat ./test/02-duplicate-action/expect.txt
+            exit 1
+          fi
+
+      - name: 03 Invert Action Test
+        run: |
+          ./frush < ./test/03-invert-action/input.cmd > ./test/03-invert-action/output.txt
+          if ! diff ./test/03-invert-action/output.txt ./test/03-invert-action/expect.txt; then
+            echo "=== Actual output ==="
+            cat ./test/03-invert-action/output.txt
+            echo "=== Expected output ==="
+            cat ./test/03-invert-action/expect.txt
+            exit 1
+          fi
+
+      - name: 04 Direct Exit Test
+        run: |
+          ./frush < ./test/04-direct-exit/input.cmd > ./test/04-direct-exit/output.txt
+          if ! diff ./test/04-direct-exit/output.txt ./test/04-direct-exit/expect.txt; then
+            echo "=== Actual output ==="
+            cat ./test/04-direct-exit/output.txt
+            echo "=== Expected output ==="
+            cat ./test/04-direct-exit/expect.txt
+            exit 1
+          fi
+
+      - name: Clean up free5GC
+        if: always()
+        run: |
+          set +e
+          cd ${{ env.FREE5GC_DIR }}
+          ./force_kill.sh
+          kill -9 $(ps aux | grep "webconsole" | grep -v grep | awk '{print $2}') 2>/dev/null
+          mongo free5gc --eval "db.dropDatabase()" 2>/dev/null
+          exit 0

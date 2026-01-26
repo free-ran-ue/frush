@@ -68,7 +68,7 @@ func (c *ueContext) Start(ctx context.Context) error {
 }
 
 func (c *ueContext) Stop() error {
-	if c.status == constant.CONTEXT_STATUS_UE_STOPPED || c.status == constant.CONTEXT_STATUS_UE_DE_REGISTERED {
+	if c.status == constant.CONTEXT_STATUS_UE_STOPPED || c.status == constant.CONTEXT_STATUS_UE_DE_REGISTERED || c.status == constant.CONTEXT_STATUS_UE_ERROR {
 		return fmt.Errorf("UE is not registered")
 	}
 
