@@ -3,13 +3,12 @@ package main
 import (
 	"context"
 	"fmt"
-	"os"
 	"strings"
 	"time"
 
 	"github.com/chzyer/readline"
 	"github.com/free-ran-ue/free-ran-ue/v2/model"
-	fruUtil "github.com/free-ran-ue/free-ran-ue/v2/util"
+	"github.com/free-ran-ue/util"
 	"github.com/free-ran-ue/frush/constant"
 	"github.com/free-ran-ue/frush/manager"
 	"github.com/free-ran-ue/frush/subscriber"
@@ -47,18 +46,18 @@ Commands:
 
 func getConfig(gnbConfigPath, ueConfigPath string) (*model.GnbConfig, *model.UeConfig, error) {
 	gnbConfig := model.GnbConfig{}
-	if err := fruUtil.LoadFromYaml(gnbConfigPath, &gnbConfig); err != nil {
+	if err := util.LoadFromYaml(gnbConfigPath, &gnbConfig); err != nil {
 		return nil, nil, err
 	}
-	if err := fruUtil.ValidateGnb(&gnbConfig); err != nil {
+	if err := util.ValidateGnb(&gnbConfig); err != nil {
 		panic(err)
 	}
 
 	ueConfig := model.UeConfig{}
-	if err := fruUtil.LoadFromYaml(ueConfigPath, &ueConfig); err != nil {
+	if err := util.LoadFromYaml(ueConfigPath, &ueConfig); err != nil {
 		return nil, nil, err
 	}
-	if err := fruUtil.ValidateUe(&ueConfig); err != nil {
+	if err := util.ValidateUe(&ueConfig); err != nil {
 		panic(err)
 	}
 
@@ -89,16 +88,7 @@ func printStatusTable(gnbName, ueImsi string, gnbStatus, ueStatus constant.Conte
 	fmt.Println("└" + strings.Repeat("─", nameWidth) + "┴" + strings.Repeat("─", stateWidth) + "┘")
 }
 
-func checkRoot() {
-	if os.Geteuid() != 0 {
-		fmt.Println("Please run as root: sudo ./frush")
-		os.Exit(1)
-	}
-}
-
 func main() {
-	checkRoot()
-
 	printFrush()
 
 	gnbConfig, ueConfig, err := getConfig(constant.TEMPLATE_GNB_YAML, constant.TEMPLATE_UE_YAML)
@@ -109,21 +99,12 @@ func main() {
 	frushManager := manager.NewManager(*gnbConfig, *ueConfig)
 
 	ctx, cancel := context.WithCancel(context.Background())
-	defer cancel()
-
 	rl, err := readline.New(constant.CMD_START)
 	if err != nil {
 		panic(err)
 	}
 	defer func() {
 		cancel()
-
-		if frushManager.UeContext().GetStatus() == constant.CONTEXT_STATUS_UE_REGISTERED {
-			frushManager.UeContext().Stop()
-		}
-		if frushManager.GnbContext().GetStatus() == constant.CONTEXT_STATUS_GNB_RUNNING {
-			frushManager.GnbContext().Stop()
-		}
 		if err := rl.Close(); err != nil {
 			panic(err)
 		}
@@ -148,69 +129,92 @@ func main() {
 		case constant.CMD_HELP:
 			usage()
 		case constant.CMD_EXIT:
+			cancel()
+			errflag := false
+			if frushManager.UeContext().GetStatus() == constant.CONTEXT_STATUS_UE_REGISTERED {
+				if err := frushManager.UeContext().Stop(); err != nil {
+					fmt.Println(err)
+				}
+			}
+			if frushManager.GnbContext().GetStatus() == constant.CONTEXT_STATUS_GNB_RUNNING {
+				if err := frushManager.GnbContext().Stop(); err != nil {
+					fmt.Println(err)
+				}
+			}
+			time.Sleep(constant.LOG_WAIT_TIME)
+			if errflag {
+				fmt.Println(constant.OUTPUT_FAILURE)
+			} else {
+				fmt.Println(constant.OUTPUT_SUCCESS)
+			}
 			return
 		case constant.CMD_ADD_SUBSCRIBER:
 			if err := subscriber.AddSubscriber(constant.TEMPLATE_CONSOLE_ACCOUNT_JSON, constant.TEMPLATE_SUBSCRIBER_JSON); err != nil {
-				fmt.Println(constant.OUTPUT_FAILURE)
 				fmt.Println(err)
+				fmt.Println(constant.OUTPUT_FAILURE)
 			} else {
 				fmt.Println(constant.OUTPUT_SUCCESS)
 			}
 		case constant.CMD_DELETE_SUBSCRIBER:
 			if err := subscriber.DeleteSubscriber(constant.TEMPLATE_CONSOLE_ACCOUNT_JSON, constant.TEMPLATE_SUBSCRIBER_JSON); err != nil {
-				fmt.Println(constant.OUTPUT_FAILURE)
 				fmt.Println(err)
+				fmt.Println(constant.OUTPUT_FAILURE)
 			} else {
 				fmt.Println(constant.OUTPUT_SUCCESS)
 			}
 		case constant.CMD_STATUS:
 			printStatusTable(frushManager.GnbContext().GetName(), frushManager.UeContext().GetImsi(), frushManager.GnbContext().GetStatus(), frushManager.UeContext().GetStatus())
+			fmt.Println(constant.OUTPUT_SUCCESS)
 		case constant.CMD_GNB:
 			if err := frushManager.GnbContext().Start(ctx); err != nil {
-				fmt.Println(constant.OUTPUT_FAILURE)
 				fmt.Println(err)
+				fmt.Println(constant.OUTPUT_FAILURE)
 			} else {
 				time.Sleep(constant.LOG_WAIT_TIME)
 				fmt.Println(constant.OUTPUT_SUCCESS)
 			}
 		case constant.CMD_UE_REGISTER:
 			if err := frushManager.UeContext().Start(ctx); err != nil {
-				fmt.Println(constant.OUTPUT_FAILURE)
 				fmt.Println(err)
+				fmt.Println(constant.OUTPUT_FAILURE)
 			} else {
 				time.Sleep(constant.LOG_WAIT_TIME)
 				fmt.Println(constant.OUTPUT_SUCCESS)
 			}
 		case constant.CMD_UE_DE_REGISTER:
-			frushManager.UeContext().Stop()
-			time.Sleep(constant.LOG_WAIT_TIME)
-			fmt.Println(constant.OUTPUT_SUCCESS)
+			if err := frushManager.UeContext().Stop(); err != nil {
+				fmt.Println(err)
+				fmt.Println(constant.OUTPUT_FAILURE)
+			} else {
+				time.Sleep(constant.LOG_WAIT_TIME)
+				fmt.Println(constant.OUTPUT_SUCCESS)
+			}
 		case constant.CMD_PING:
 			switch len(cmds) {
 			case 1:
 				fmt.Printf("Pinging %s...\n", constant.DN_ONE)
 				if err := frushManager.UeContext().Ping(constant.DN_ONE); err != nil {
-					fmt.Println(constant.OUTPUT_FAILURE)
 					fmt.Println(err)
+					fmt.Println(constant.OUTPUT_FAILURE)
 				} else {
 					fmt.Println(constant.OUTPUT_SUCCESS)
 				}
 				fmt.Printf("Pinging %s...\n", constant.DN_EIGHT)
 				if err := frushManager.UeContext().Ping(constant.DN_EIGHT); err != nil {
-					fmt.Println(constant.OUTPUT_FAILURE)
 					fmt.Println(err)
+					fmt.Println(constant.OUTPUT_FAILURE)
 				} else {
 					fmt.Println(constant.OUTPUT_SUCCESS)
 				}
 			case 2:
-				if err := fruUtil.ValidateIp(cmds[1]); err != nil {
-					fmt.Println(constant.OUTPUT_FAILURE)
+				if err := util.ValidateIp(cmds[1]); err != nil {
 					fmt.Println(err)
+					fmt.Println(constant.OUTPUT_FAILURE)
 				} else {
 					fmt.Printf("Pinging %s...\n", cmds[1])
 					if err := frushManager.UeContext().Ping(cmds[1]); err != nil {
-						fmt.Println(constant.OUTPUT_FAILURE)
 						fmt.Println(err)
+						fmt.Println(constant.OUTPUT_FAILURE)
 					} else {
 						fmt.Println(constant.OUTPUT_SUCCESS)
 					}

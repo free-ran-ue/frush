@@ -5,7 +5,7 @@ go 1.25.5
 require (
 	github.com/Alonza0314/logger-go/v2 v2.0.5
 	github.com/chzyer/readline v1.5.1
-	github.com/free-ran-ue/free-ran-ue/v2 v2.3.5
+	github.com/free-ran-ue/free-ran-ue/v2 v2.3.8-0.20260126040659-b1a212893c6e
 	github.com/free-ran-ue/util v0.0.0
 	github.com/gin-gonic/gin v1.11.0
 )

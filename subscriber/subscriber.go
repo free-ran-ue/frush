@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"net/http"
 
-	fruUtil "github.com/free-ran-ue/free-ran-ue/v2/util"
 	"github.com/free-ran-ue/frush/constant"
 	"github.com/free-ran-ue/util"
 )
@@ -19,7 +18,7 @@ func getConsoleLoginToken(consoleAccountTemplatePath string) (string, error) {
 	headers := make(map[string]string)
 	headers[constant.HTTP_HEADER_CONTENT_TYPE] = constant.HTTP_HEADER_CONTENT_TYPE_JSON
 
-	response, err := fruUtil.SendHttpRequest(
+	response, err := util.SendHttpRequest(
 		fmt.Sprintf("http://%s:%d%s", constant.CONSOLE_IP, constant.CONSOLE_PORT, constant.CONSOLE_LOGIN_PATH),
 		http.MethodPost,
 		headers,
@@ -71,7 +70,7 @@ func subscriberMain(token, subscriberTemplatePath, action string) error {
 		constant.CONSOLE_TOKEN:            token,
 	}
 
-	response, err := fruUtil.SendHttpRequest(
+	response, err := util.SendHttpRequest(
 		fmt.Sprintf("http://%s:%d%s", constant.CONSOLE_IP, constant.CONSOLE_PORT, fmt.Sprintf(constant.CONSOLE_ADD_SUBSCRIBER_PATH, imsi, plmnID)),
 		action,
 		headers,
