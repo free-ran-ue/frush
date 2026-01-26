@@ -43,9 +43,9 @@ jobs:
         run: |
           cd ${{ env.FREE5GC_DIR }}
           ./run.sh &
-          sleep 10
+          sleep 5
           ./webconsole/bin/webconsole &
-          sleep 10
+          sleep 5
 
       - name: 01 General Test
         run: |
@@ -77,6 +77,17 @@ jobs:
             cat ./test/03-invert-action/output.txt
             echo "=== Expected output ==="
             cat ./test/03-invert-action/expect.txt
+            exit 1
+          fi
+
+      - name: 04 Direct Exit Test
+        run: |
+          ./frush < ./test/04-direct-exit/input.cmd > ./test/04-direct-exit/output.txt
+          if ! diff ./test/04-direct-exit/output.txt ./test/04-direct-exit/expect.txt; then
+            echo "=== Actual output ==="
+            cat ./test/04-direct-exit/output.txt
+            echo "=== Expected output ==="
+            cat ./test/04-direct-exit/expect.txt
             exit 1
           fi
 
