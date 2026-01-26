@@ -130,14 +130,23 @@ func main() {
 			usage()
 		case constant.CMD_EXIT:
 			cancel()
+			errflag := false
 			if frushManager.UeContext().GetStatus() == constant.CONTEXT_STATUS_UE_REGISTERED {
-				frushManager.UeContext().Stop()
+				if err := frushManager.UeContext().Stop(); err != nil {
+					fmt.Println(err)
+				}
 			}
 			if frushManager.GnbContext().GetStatus() == constant.CONTEXT_STATUS_GNB_RUNNING {
-				frushManager.GnbContext().Stop()
+				if err := frushManager.GnbContext().Stop(); err != nil {
+					fmt.Println(err)
+				}
 			}
 			time.Sleep(constant.LOG_WAIT_TIME)
-			fmt.Println(constant.OUTPUT_SUCCESS)
+			if errflag {
+				fmt.Println(constant.OUTPUT_FAILURE)
+			} else {
+				fmt.Println(constant.OUTPUT_SUCCESS)
+			}
 			return
 		case constant.CMD_ADD_SUBSCRIBER:
 			if err := subscriber.AddSubscriber(constant.TEMPLATE_CONSOLE_ACCOUNT_JSON, constant.TEMPLATE_SUBSCRIBER_JSON); err != nil {
@@ -155,6 +164,7 @@ func main() {
 			}
 		case constant.CMD_STATUS:
 			printStatusTable(frushManager.GnbContext().GetName(), frushManager.UeContext().GetImsi(), frushManager.GnbContext().GetStatus(), frushManager.UeContext().GetStatus())
+			fmt.Println(constant.OUTPUT_SUCCESS)
 		case constant.CMD_GNB:
 			if err := frushManager.GnbContext().Start(ctx); err != nil {
 				fmt.Println(err)
@@ -172,9 +182,13 @@ func main() {
 				fmt.Println(constant.OUTPUT_SUCCESS)
 			}
 		case constant.CMD_UE_DE_REGISTER:
-			frushManager.UeContext().Stop()
-			time.Sleep(constant.LOG_WAIT_TIME)
-			fmt.Println(constant.OUTPUT_SUCCESS)
+			if err := frushManager.UeContext().Stop(); err != nil {
+				fmt.Println(err)
+				fmt.Println(constant.OUTPUT_FAILURE)
+			} else {
+				time.Sleep(constant.LOG_WAIT_TIME)
+				fmt.Println(constant.OUTPUT_SUCCESS)
+			}
 		case constant.CMD_PING:
 			switch len(cmds) {
 			case 1:

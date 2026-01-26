@@ -2,6 +2,7 @@ package manager
 
 import (
 	"context"
+	"fmt"
 
 	loggergoUtil "github.com/Alonza0314/logger-go/v2/util"
 	"github.com/free-ran-ue/free-ran-ue/v2/gnb"
@@ -38,6 +39,10 @@ func (c *gnbContext) SetStatus(status constant.ContextStatus) {
 }
 
 func (c *gnbContext) Start(ctx context.Context) error {
+	if c.status == constant.CONTEXT_STATUS_GNB_RUNNING {
+		return fmt.Errorf("gNB is running")
+	}
+
 	c.SetStatus(constant.CONTEXT_STATUS_GNB_STARTING)
 
 	if err := c.gnb.Start(ctx); err != nil {
@@ -49,10 +54,16 @@ func (c *gnbContext) Start(ctx context.Context) error {
 	return nil
 }
 
-func (c *gnbContext) Stop() {
+func (c *gnbContext) Stop() error {
+	if c.status == constant.CONTEXT_STATUS_GNB_STOPPED {
+		return fmt.Errorf("gNB is not running")
+	}
+
 	c.SetStatus(constant.CONTEXT_STATUS_GNB_STOPPING)
 
 	c.gnb.Stop()
 
 	c.SetStatus(constant.CONTEXT_STATUS_GNB_STOPPED)
+
+	return nil
 }
