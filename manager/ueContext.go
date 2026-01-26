@@ -15,16 +15,17 @@ import (
 )
 
 type ueContext struct {
-	ue     *ue.Ue
-	imsi   string
-	tunnel string
-	status constant.ContextStatus
-	wg     *sync.WaitGroup
-	ctx    context.Context
-	cancel context.CancelFunc
+	ue        *ue.Ue
+	imsi      string
+	tunnel    string
+	status    constant.ContextStatus
+	wg        *sync.WaitGroup
+	ctx       context.Context
+	cancel    context.CancelFunc
+	managerWg *sync.WaitGroup
 }
 
-func newUeContext(ueConfig model.UeConfig) *ueContext {
+func newUeContext(ueConfig model.UeConfig, managerWg *sync.WaitGroup) *ueContext {
 	logger := logger.NewUeLogger(loggergoUtil.LogLevelString(ueConfig.Logger.Level), "", true)
 	return &ueContext{
 		ue:     ue.NewUe(&ueConfig, &logger),
@@ -34,6 +35,7 @@ func newUeContext(ueConfig model.UeConfig) *ueContext {
 		wg:     &sync.WaitGroup{},
 		ctx:    nil,
 		cancel: nil,
+		managerWg: managerWg,
 	}
 }
 
@@ -60,6 +62,8 @@ func (c *ueContext) Start(ctx context.Context) error {
 	}
 	c.SetStatus(constant.CONTEXT_STATUS_UE_REGISTERED)
 
+	c.managerWg.Add(1)
+
 	return nil
 }
 
@@ -72,6 +76,8 @@ func (c *ueContext) Stop() {
 	c.ue.Stop()
 
 	c.SetStatus(constant.CONTEXT_STATUS_UE_DE_REGISTERED)
+
+	c.managerWg.Done()
 }
 
 func (c *ueContext) Ping(dn string) error {
