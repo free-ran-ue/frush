@@ -3,7 +3,6 @@ package main
 import (
 	"context"
 	"fmt"
-	"os"
 	"strings"
 	"time"
 
@@ -89,16 +88,7 @@ func printStatusTable(gnbName, ueImsi string, gnbStatus, ueStatus constant.Conte
 	fmt.Println("└" + strings.Repeat("─", nameWidth) + "┴" + strings.Repeat("─", stateWidth) + "┘")
 }
 
-func checkRoot() {
-	if os.Geteuid() != 0 {
-		fmt.Println("Please run as root: sudo ./frush")
-		os.Exit(1)
-	}
-}
-
 func main() {
-	checkRoot()
-
 	printFrush()
 
 	gnbConfig, ueConfig, err := getConfig(constant.TEMPLATE_GNB_YAML, constant.TEMPLATE_UE_YAML)
