@@ -1,8 +1,6 @@
 package manager
 
 import (
-	"sync"
-
 	"github.com/free-ran-ue/free-ran-ue/v2/model"
 )
 
@@ -11,10 +9,10 @@ type manager struct {
 	ueContext  *ueContext
 }
 
-func NewManager(gnbConfig model.GnbConfig, ueConfig model.UeConfig, managerWg *sync.WaitGroup) *manager {
+func NewManager(gnbConfig model.GnbConfig, ueConfig model.UeConfig) *manager {
 	return &manager{
-		gnbContext: newGnbContext(gnbConfig, managerWg),
-		ueContext:  newUeContext(ueConfig, managerWg),
+		gnbContext: newGnbContext(gnbConfig),
+		ueContext:  newUeContext(ueConfig),
 	}
 }
 

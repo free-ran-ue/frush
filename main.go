@@ -4,12 +4,11 @@ import (
 	"context"
 	"fmt"
 	"strings"
-	"sync"
 	"time"
 
 	"github.com/chzyer/readline"
 	"github.com/free-ran-ue/free-ran-ue/v2/model"
-	fruUtil "github.com/free-ran-ue/free-ran-ue/v2/util"
+	"github.com/free-ran-ue/util"
 	"github.com/free-ran-ue/frush/constant"
 	"github.com/free-ran-ue/frush/manager"
 	"github.com/free-ran-ue/frush/subscriber"
@@ -47,18 +46,18 @@ Commands:
 
 func getConfig(gnbConfigPath, ueConfigPath string) (*model.GnbConfig, *model.UeConfig, error) {
 	gnbConfig := model.GnbConfig{}
-	if err := fruUtil.LoadFromYaml(gnbConfigPath, &gnbConfig); err != nil {
+	if err := util.LoadFromYaml(gnbConfigPath, &gnbConfig); err != nil {
 		return nil, nil, err
 	}
-	if err := fruUtil.ValidateGnb(&gnbConfig); err != nil {
+	if err := util.ValidateGnb(&gnbConfig); err != nil {
 		panic(err)
 	}
 
 	ueConfig := model.UeConfig{}
-	if err := fruUtil.LoadFromYaml(ueConfigPath, &ueConfig); err != nil {
+	if err := util.LoadFromYaml(ueConfigPath, &ueConfig); err != nil {
 		return nil, nil, err
 	}
-	if err := fruUtil.ValidateUe(&ueConfig); err != nil {
+	if err := util.ValidateUe(&ueConfig); err != nil {
 		panic(err)
 	}
 
@@ -97,8 +96,7 @@ func main() {
 		panic(err)
 	}
 
-	managerWg := sync.WaitGroup{}
-	frushManager := manager.NewManager(*gnbConfig, *ueConfig, &managerWg)
+	frushManager := manager.NewManager(*gnbConfig, *ueConfig)
 
 	ctx, cancel := context.WithCancel(context.Background())
 	rl, err := readline.New(constant.CMD_START)
@@ -138,7 +136,7 @@ func main() {
 			if frushManager.GnbContext().GetStatus() == constant.CONTEXT_STATUS_GNB_RUNNING {
 				frushManager.GnbContext().Stop()
 			}
-			managerWg.Wait()
+			time.Sleep(constant.LOG_WAIT_TIME)
 			fmt.Println(constant.OUTPUT_SUCCESS)
 			return
 		case constant.CMD_ADD_SUBSCRIBER:
@@ -195,7 +193,7 @@ func main() {
 					fmt.Println(constant.OUTPUT_SUCCESS)
 				}
 			case 2:
-				if err := fruUtil.ValidateIp(cmds[1]); err != nil {
+				if err := util.ValidateIp(cmds[1]); err != nil {
 					fmt.Println(err)
 					fmt.Println(constant.OUTPUT_FAILURE)
 				} else {

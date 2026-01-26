@@ -2,7 +2,6 @@ package manager
 
 import (
 	"context"
-	"sync"
 
 	loggergoUtil "github.com/Alonza0314/logger-go/v2/util"
 	"github.com/free-ran-ue/free-ran-ue/v2/gnb"
@@ -12,19 +11,17 @@ import (
 )
 
 type gnbContext struct {
-	gnb       *gnb.Gnb
-	name      string
-	status    constant.ContextStatus
-	managerWg *sync.WaitGroup
+	gnb    *gnb.Gnb
+	name   string
+	status constant.ContextStatus
 }
 
-func newGnbContext(gnbConfig model.GnbConfig, managerWg *sync.WaitGroup) *gnbContext {
+func newGnbContext(gnbConfig model.GnbConfig) *gnbContext {
 	logger := logger.NewGnbLogger(loggergoUtil.LogLevelString(gnbConfig.Logger.Level), "", true)
 	return &gnbContext{
-		gnb:       gnb.NewGnb(&gnbConfig, &logger),
-		name:      gnbConfig.Gnb.GnbName,
-		status:    constant.CONTEXT_STATUS_GNB_STOPPED,
-		managerWg: managerWg,
+		gnb:    gnb.NewGnb(&gnbConfig, &logger),
+		name:   gnbConfig.Gnb.GnbName,
+		status: constant.CONTEXT_STATUS_GNB_STOPPED,
 	}
 }
 
@@ -49,8 +46,6 @@ func (c *gnbContext) Start(ctx context.Context) error {
 	}
 	c.SetStatus(constant.CONTEXT_STATUS_GNB_RUNNING)
 
-	c.managerWg.Add(1)
-
 	return nil
 }
 
@@ -60,6 +55,4 @@ func (c *gnbContext) Stop() {
 	c.gnb.Stop()
 
 	c.SetStatus(constant.CONTEXT_STATUS_GNB_STOPPED)
-
-	c.managerWg.Done()
 }
