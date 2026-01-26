@@ -47,7 +47,7 @@ jobs:
           ./webconsole/bin/webconsole &
           sleep 10
 
-      - name: General Test
+      - name: 01 General Test
         run: |
           ./frush < ./test/01-general/input.cmd > ./test/01-general/output.txt
           if ! diff ./test/01-general/output.txt ./test/01-general/expect.txt; then
@@ -55,6 +55,28 @@ jobs:
             cat ./test/01-general/output.txt
             echo "=== Expected output ==="
             cat ./test/01-general/expect.txt
+            exit 1
+          fi
+
+      - name: 02 Duplicate Action Test
+        run: |
+          ./frush < ./test/02-duplicate-action/input.cmd > ./test/02-duplicate-action/output.txt
+          if ! diff ./test/02-duplicate-action/output.txt ./test/02-duplicate-action/expect.txt; then
+            echo "=== Actual output ==="
+            cat ./test/02-duplicate-action/output.txt
+            echo "=== Expected output ==="
+            cat ./test/02-duplicate-action/expect.txt
+            exit 1
+          fi
+
+      - name: 03 Invert Action Test
+        run: |
+          ./frush < ./test/03-invert-action/input.cmd > ./test/03-invert-action/output.txt
+          if ! diff ./test/03-invert-action/output.txt ./test/03-invert-action/expect.txt; then
+            echo "=== Actual output ==="
+            cat ./test/03-invert-action/output.txt
+            echo "=== Expected output ==="
+            cat ./test/03-invert-action/expect.txt
             exit 1
           fi
 

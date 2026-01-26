@@ -1,0 +1,16 @@
+status
+gnb
+gnb
+status
+add
+add
+status
+reg
+reg
+status
+dereg
+dereg
+status
+delete
+delete
+exit
