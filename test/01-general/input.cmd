@@ -1,0 +1,12 @@
+delete
+status
+add
+gnb
+status
+reg
+status
+ping
+status
+dereg
+delete
+exit

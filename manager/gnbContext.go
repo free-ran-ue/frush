@@ -2,6 +2,7 @@ package manager
 
 import (
 	"context"
+	"fmt"
 	"time"
 
 	loggergoUtil "github.com/Alonza0314/logger-go/v2/util"
@@ -45,6 +46,10 @@ func (c *gnbContext) SetStatus(status constant.ContextStatus) {
 }
 
 func (c *gnbContext) Start(ctx context.Context) error {
+	if c.status == constant.CONTEXT_STATUS_GNB_RUNNING {
+		return fmt.Errorf("gNB is running")
+	}
+
 	c.SetStatus(constant.CONTEXT_STATUS_GNB_STARTING)
 
 	// Create a new context for this gNB instance
@@ -63,7 +68,11 @@ func (c *gnbContext) Start(ctx context.Context) error {
 	return nil
 }
 
-func (c *gnbContext) Stop() {
+func (c *gnbContext) Stop() error {
+	if c.status == constant.CONTEXT_STATUS_GNB_STOPPED {
+		return fmt.Errorf("gNB is not running")
+	}
+
 	c.SetStatus(constant.CONTEXT_STATUS_GNB_STOPPING)
 
 	// Cancel context first to signal goroutines to stop
@@ -82,4 +91,6 @@ func (c *gnbContext) Stop() {
 	c.ctx = nil
 
 	c.SetStatus(constant.CONTEXT_STATUS_GNB_STOPPED)
+
+	return nil
 }
