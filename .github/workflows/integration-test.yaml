@@ -61,7 +61,9 @@ jobs:
       - name: Clean up free5GC
         if: always()
         run: |
+          set +e
           cd ${{ env.FREE5GC_DIR }}
           ./force_kill.sh
-          kill -9 $(ps aux | grep "webconsole" | grep -v grep | awk '{print $2}')
-          mongo free5gc --eval "db.dropDatabase()"
+          kill -9 $(ps aux | grep "webconsole" | grep -v grep | awk '{print $2}') 2>/dev/null
+          mongo free5gc --eval "db.dropDatabase()" 2>/dev/null
+          exit 0
