@@ -50,11 +50,11 @@ jobs:
       - name: General Test
         run: |
           ./frush < ./test/01-general/input.cmd > ./test/01-general/output.txt
-          if ! diff ./test/01-general/output.txt ./test/01-general/expected.txt; then
+          if ! diff ./test/01-general/output.txt ./test/01-general/expect.txt; then
             echo "=== Actual output ==="
             cat ./test/01-general/output.txt
             echo "=== Expected output ==="
-            cat ./test/01-general/expected.txt
+            cat ./test/01-general/expect.txt
             exit 1
           fi
 
