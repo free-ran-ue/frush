@@ -180,8 +180,8 @@ func main() {
 			}
 		case constant.CMD_UE_REGISTER:
 			if frushManager.GnbContext().GetStatus() != constant.CONTEXT_STATUS_GNB_RUNNING {
-				fmt.Println(constant.OUTPUT_FAILURE)
 				fmt.Println(constant.SYSTEM_HINT_GNB_NOT_RUNNING)
+				fmt.Println(constant.OUTPUT_FAILURE)
 				continue
 			}
 			if frushManager.UeContext().GetStatus() == constant.CONTEXT_STATUS_UE_REGISTERED {
@@ -197,8 +197,8 @@ func main() {
 			}
 		case constant.CMD_UE_DE_REGISTER:
 			if frushManager.UeContext().GetStatus() != constant.CONTEXT_STATUS_UE_REGISTERED {
-				fmt.Println(constant.OUTPUT_FAILURE)
 				fmt.Println(constant.SYSTEM_HINT_UE_NOT_REGISTERED)
+				fmt.Println(constant.OUTPUT_FAILURE)
 				continue
 			}
 			if err := frushManager.UeContext().Stop(); err != nil {
@@ -210,12 +210,12 @@ func main() {
 			}
 		case constant.CMD_GNB_STOP:
 			if frushManager.GnbContext().GetStatus() != constant.CONTEXT_STATUS_GNB_RUNNING {
-				fmt.Println(constant.OUTPUT_FAILURE)
 				fmt.Println(constant.SYSTEM_HINT_GNB_NOT_RUNNING)
+				fmt.Println(constant.OUTPUT_FAILURE)
 				continue
 			}
 			if frushManager.UeContext().GetStatus() == constant.CONTEXT_STATUS_UE_REGISTERED {
-				frushManager.UeContext().Stop()
+				_ = frushManager.UeContext().Stop()
 			}
 			if err := frushManager.GnbContext().Stop(); err != nil {
 				fmt.Println(err)
