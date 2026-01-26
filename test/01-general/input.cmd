@@ -1,3 +1,4 @@
+delete
 status
 add
 gnb
