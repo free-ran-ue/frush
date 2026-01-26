@@ -9,6 +9,7 @@ const (
 	CMD_ADD_SUBSCRIBER    = "add"
 	CMD_DELETE_SUBSCRIBER = "delete"
 	CMD_GNB               = "gnb"
+	CMD_GNB_STOP          = "stop"
 	CMD_STATUS            = "status"
 	CMD_UE_REGISTER       = "reg"
 	CMD_UE_DE_REGISTER    = "dereg"
@@ -22,8 +23,12 @@ const (
 )
 
 const (
-	SYSTEM_HINT_CTRL_C_EXIT = "If you want to exit, please type 'exit'"
-	SYSTEM_HINT_UNKNOWN_CMD = "Unknown command: %s"
+	SYSTEM_HINT_CTRL_C_EXIT       = "If you want to exit, please type 'exit'"
+	SYSTEM_HINT_UNKNOWN_CMD       = "Unknown command: %s"
+	SYSTEM_HINT_GNB_ALREADY_RUN   = "gNB is already running"
+	SYSTEM_HINT_GNB_NOT_RUNNING   = "gNB is not running, please start gNB first"
+	SYSTEM_HINT_UE_ALREADY_REG    = "UE is already registered"
+	SYSTEM_HINT_UE_NOT_REGISTERED = "UE is not registered"
 )
 
 const (

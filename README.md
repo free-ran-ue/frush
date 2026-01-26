@@ -47,6 +47,7 @@ sudo ./frush
 | delete | - | Delete a subscriber from free5GC's webconsole |
 | status | - | Show the status of gNB and UE |
 | gnb | - | Start gNB |
+| stop | - | Stop gNB (will also de-register UE if registered) |
 | reg | - | Register UE to free5GC |
 | dereg | - | De-register UE |
 | ping | {IP} | Ping the DN, if dn is not provided, ping 1.1.1.1 and 8.8.8.8 |

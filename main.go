@@ -9,7 +9,7 @@ import (
 
 	"github.com/chzyer/readline"
 	"github.com/free-ran-ue/free-ran-ue/v2/model"
-	fruUtil "github.com/free-ran-ue/free-ran-ue/v2/util"
+	fruUtil "github.com/free-ran-ue/util"
 	"github.com/free-ran-ue/frush/constant"
 	"github.com/free-ran-ue/frush/manager"
 	"github.com/free-ran-ue/frush/subscriber"
@@ -38,6 +38,7 @@ Commands:
 
 	status  Show the status of gNB and UE
 	gnb     Start gNB
+	stop    Stop gNB
 	reg     Register UE
 	dereg   De-register UE
 
@@ -166,6 +167,10 @@ func main() {
 		case constant.CMD_STATUS:
 			printStatusTable(frushManager.GnbContext().GetName(), frushManager.UeContext().GetImsi(), frushManager.GnbContext().GetStatus(), frushManager.UeContext().GetStatus())
 		case constant.CMD_GNB:
+			if frushManager.GnbContext().GetStatus() == constant.CONTEXT_STATUS_GNB_RUNNING {
+				fmt.Println(constant.SYSTEM_HINT_GNB_ALREADY_RUN)
+				continue
+			}
 			if err := frushManager.GnbContext().Start(ctx); err != nil {
 				fmt.Println(constant.OUTPUT_FAILURE)
 				fmt.Println(err)
@@ -174,6 +179,15 @@ func main() {
 				fmt.Println(constant.OUTPUT_SUCCESS)
 			}
 		case constant.CMD_UE_REGISTER:
+			if frushManager.GnbContext().GetStatus() != constant.CONTEXT_STATUS_GNB_RUNNING {
+				fmt.Println(constant.OUTPUT_FAILURE)
+				fmt.Println(constant.SYSTEM_HINT_GNB_NOT_RUNNING)
+				continue
+			}
+			if frushManager.UeContext().GetStatus() == constant.CONTEXT_STATUS_UE_REGISTERED {
+				fmt.Println(constant.SYSTEM_HINT_UE_ALREADY_REG)
+				continue
+			}
 			if err := frushManager.UeContext().Start(ctx); err != nil {
 				fmt.Println(constant.OUTPUT_FAILURE)
 				fmt.Println(err)
@@ -182,7 +196,24 @@ func main() {
 				fmt.Println(constant.OUTPUT_SUCCESS)
 			}
 		case constant.CMD_UE_DE_REGISTER:
+			if frushManager.UeContext().GetStatus() != constant.CONTEXT_STATUS_UE_REGISTERED {
+				fmt.Println(constant.OUTPUT_FAILURE)
+				fmt.Println(constant.SYSTEM_HINT_UE_NOT_REGISTERED)
+				continue
+			}
 			frushManager.UeContext().Stop()
+			time.Sleep(constant.LOG_WAIT_TIME)
+			fmt.Println(constant.OUTPUT_SUCCESS)
+		case constant.CMD_GNB_STOP:
+			if frushManager.GnbContext().GetStatus() != constant.CONTEXT_STATUS_GNB_RUNNING {
+				fmt.Println(constant.OUTPUT_FAILURE)
+				fmt.Println(constant.SYSTEM_HINT_GNB_NOT_RUNNING)
+				continue
+			}
+			if frushManager.UeContext().GetStatus() == constant.CONTEXT_STATUS_UE_REGISTERED {
+				frushManager.UeContext().Stop()
+			}
+			frushManager.GnbContext().Stop()
 			time.Sleep(constant.LOG_WAIT_TIME)
 			fmt.Println(constant.OUTPUT_SUCCESS)
 		case constant.CMD_PING:
