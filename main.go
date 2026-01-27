@@ -188,7 +188,7 @@ func main() {
 				fmt.Println(constant.SYSTEM_HINT_UE_ALREADY_REG)
 				continue
 			}
-			if err := frushManager.UeContext().Start(ctx); err != nil {
+			if err := frushManager.UeContext().Start(frushManager.GnbContext().GetContext()); err != nil {
 				fmt.Println(err)
 				fmt.Println(constant.OUTPUT_FAILURE)
 			} else {
