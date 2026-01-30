@@ -16,6 +16,11 @@ const (
 )
 
 const (
+	PING_DEFAULT = 0
+	PING_DN      = 1
+)
+
+const (
 	OUTPUT_SUCCESS = "==> Success"
 	OUTPUT_FAILURE = "==> Fail"
 	WAIT_TIME      = 300 * time.Millisecond

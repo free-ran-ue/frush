@@ -65,7 +65,7 @@ func init() {
 
 func pingFunc(cmd *cobra.Command, args []string) {
 	switch len(args) {
-	case 0:
+	case constant.PING_DEFAULT:
 		fmt.Printf("Pinging %s...\n", constant.DN_ONE)
 		if err := manager.Manager.UeContext().Ping(constant.DN_ONE); err != nil {
 			fmt.Println(err)
@@ -80,7 +80,7 @@ func pingFunc(cmd *cobra.Command, args []string) {
 		} else {
 			fmt.Println(constant.OUTPUT_SUCCESS)
 		}
-	case 1:
+	case constant.PING_DN:
 		if err := util.ValidateIp(args[1]); err != nil {
 			fmt.Println(err)
 			fmt.Println(constant.OUTPUT_FAILURE)
