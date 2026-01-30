@@ -8,10 +8,10 @@ import (
 
 	"github.com/chzyer/readline"
 	"github.com/free-ran-ue/free-ran-ue/v2/model"
-	"github.com/free-ran-ue/util"
+	"github.com/free-ran-ue/frush/cmd"
 	"github.com/free-ran-ue/frush/constant"
 	"github.com/free-ran-ue/frush/manager"
-	"github.com/free-ran-ue/frush/subscriber"
+	"github.com/free-ran-ue/util"
 )
 
 func printFrush() {
@@ -23,24 +23,6 @@ func printFrush() {
 ======██║     ██║  ██║╚██████╔╝███████║██║  ██║======
 ======╚═╝     ╚═╝  ╚═╝ ╚═════╝ ╚══════╝╚═╝  ╚═╝======
 =====================================================
-`)
-}
-
-func usage() {
-	fmt.Print(`
-Commands:
-	help    Show help
-	exit    Exit
-
-	add    Add a subscriber
-	delete Delete a subscriber
-
-	status  Show the status of gNB and UE
-	gnb     Start gNB
-	reg     Register UE
-	dereg   De-register UE
-
-	ping {dn}   Ping the DN, if dn is not provided, ping 1.1.1.1 and 8.8.8.8
 `)
 }
 
@@ -64,30 +46,6 @@ func getConfig(gnbConfigPath, ueConfigPath string) (*model.GnbConfig, *model.UeC
 	return &gnbConfig, &ueConfig, nil
 }
 
-func printStatusTable(gnbName, ueImsi string, gnbStatus, ueStatus constant.ContextStatus) {
-	nameHeader := "Name"
-	maxNameLen := len(nameHeader)
-
-	if len(gnbName) > maxNameLen {
-		maxNameLen = len(gnbName)
-	}
-	if len(ueImsi) > maxNameLen {
-		maxNameLen = len(ueImsi)
-	}
-
-	nameWidth := maxNameLen + 2
-	stateWidth := 19
-
-	fmt.Println("┌" + strings.Repeat("─", nameWidth) + "┬" + strings.Repeat("─", stateWidth) + "┐")
-	fmt.Printf("│ %-*s│ %-*s│\n", nameWidth-1, nameHeader, stateWidth-1, "State")
-	fmt.Println("├" + strings.Repeat("─", nameWidth) + "┼" + strings.Repeat("─", stateWidth) + "┤")
-
-	fmt.Printf("│ %-*s│ %-*s│\n", nameWidth-1, gnbName, stateWidth-1, gnbStatus)
-	fmt.Printf("│ %-*s│ %-*s│\n", nameWidth-1, ueImsi, stateWidth-1, ueStatus)
-
-	fmt.Println("└" + strings.Repeat("─", nameWidth) + "┴" + strings.Repeat("─", stateWidth) + "┘")
-}
-
 func main() {
 	printFrush()
 
@@ -96,15 +54,15 @@ func main() {
 		panic(err)
 	}
 
-	frushManager := manager.NewManager(*gnbConfig, *ueConfig)
+	manager.Manager = manager.NewManager(*gnbConfig, *ueConfig)
+	manager.RootCtx, manager.RootCancel = context.WithCancel(context.Background())
 
-	ctx, cancel := context.WithCancel(context.Background())
 	rl, err := readline.New(constant.CMD_START)
 	if err != nil {
 		panic(err)
 	}
 	defer func() {
-		cancel()
+		manager.RootCancel()
 		if err := rl.Close(); err != nil {
 			panic(err)
 		}
@@ -125,104 +83,34 @@ func main() {
 			continue
 		}
 
-		switch cmds[0] {
-		case constant.CMD_HELP:
-			usage()
-		case constant.CMD_EXIT:
-			cancel()
+		if cmds[0] == constant.CMD_EXIT {
+			manager.RootCancel()
 			errflag := false
-			if frushManager.UeContext().GetStatus() == constant.CONTEXT_STATUS_UE_REGISTERED {
-				if err := frushManager.UeContext().Stop(); err != nil {
+			if manager.Manager.UeContext().GetStatus() == constant.CONTEXT_STATUS_UE_REGISTERED {
+				if err := manager.Manager.UeContext().Stop(); err != nil {
 					fmt.Println(err)
+					errflag = true
 				}
 			}
-			if frushManager.GnbContext().GetStatus() == constant.CONTEXT_STATUS_GNB_RUNNING {
-				if err := frushManager.GnbContext().Stop(); err != nil {
+			if manager.Manager.GnbContext().GetStatus() == constant.CONTEXT_STATUS_GNB_RUNNING {
+				if err := manager.Manager.GnbContext().Stop(); err != nil {
 					fmt.Println(err)
+					errflag = true
 				}
 			}
-			time.Sleep(constant.LOG_WAIT_TIME)
+			time.Sleep(constant.WAIT_TIME)
 			if errflag {
 				fmt.Println(constant.OUTPUT_FAILURE)
 			} else {
 				fmt.Println(constant.OUTPUT_SUCCESS)
 			}
 			return
-		case constant.CMD_ADD_SUBSCRIBER:
-			if err := subscriber.AddSubscriber(constant.TEMPLATE_CONSOLE_ACCOUNT_JSON, constant.TEMPLATE_SUBSCRIBER_JSON); err != nil {
-				fmt.Println(err)
-				fmt.Println(constant.OUTPUT_FAILURE)
-			} else {
-				fmt.Println(constant.OUTPUT_SUCCESS)
-			}
-		case constant.CMD_DELETE_SUBSCRIBER:
-			if err := subscriber.DeleteSubscriber(constant.TEMPLATE_CONSOLE_ACCOUNT_JSON, constant.TEMPLATE_SUBSCRIBER_JSON); err != nil {
-				fmt.Println(err)
-				fmt.Println(constant.OUTPUT_FAILURE)
-			} else {
-				fmt.Println(constant.OUTPUT_SUCCESS)
-			}
-		case constant.CMD_STATUS:
-			printStatusTable(frushManager.GnbContext().GetName(), frushManager.UeContext().GetImsi(), frushManager.GnbContext().GetStatus(), frushManager.UeContext().GetStatus())
-			fmt.Println(constant.OUTPUT_SUCCESS)
-		case constant.CMD_GNB:
-			if err := frushManager.GnbContext().Start(ctx); err != nil {
-				fmt.Println(err)
-				fmt.Println(constant.OUTPUT_FAILURE)
-			} else {
-				time.Sleep(constant.LOG_WAIT_TIME)
-				fmt.Println(constant.OUTPUT_SUCCESS)
-			}
-		case constant.CMD_UE_REGISTER:
-			if err := frushManager.UeContext().Start(ctx); err != nil {
-				fmt.Println(err)
-				fmt.Println(constant.OUTPUT_FAILURE)
-			} else {
-				time.Sleep(constant.LOG_WAIT_TIME)
-				fmt.Println(constant.OUTPUT_SUCCESS)
-			}
-		case constant.CMD_UE_DE_REGISTER:
-			if err := frushManager.UeContext().Stop(); err != nil {
-				fmt.Println(err)
-				fmt.Println(constant.OUTPUT_FAILURE)
-			} else {
-				time.Sleep(constant.LOG_WAIT_TIME)
-				fmt.Println(constant.OUTPUT_SUCCESS)
-			}
-		case constant.CMD_PING:
-			switch len(cmds) {
-			case 1:
-				fmt.Printf("Pinging %s...\n", constant.DN_ONE)
-				if err := frushManager.UeContext().Ping(constant.DN_ONE); err != nil {
-					fmt.Println(err)
-					fmt.Println(constant.OUTPUT_FAILURE)
-				} else {
-					fmt.Println(constant.OUTPUT_SUCCESS)
-				}
-				fmt.Printf("Pinging %s...\n", constant.DN_EIGHT)
-				if err := frushManager.UeContext().Ping(constant.DN_EIGHT); err != nil {
-					fmt.Println(err)
-					fmt.Println(constant.OUTPUT_FAILURE)
-				} else {
-					fmt.Println(constant.OUTPUT_SUCCESS)
-				}
-			case 2:
-				if err := util.ValidateIp(cmds[1]); err != nil {
-					fmt.Println(err)
-					fmt.Println(constant.OUTPUT_FAILURE)
-				} else {
-					fmt.Printf("Pinging %s...\n", cmds[1])
-					if err := frushManager.UeContext().Ping(cmds[1]); err != nil {
-						fmt.Println(err)
-						fmt.Println(constant.OUTPUT_FAILURE)
-					} else {
-						fmt.Println(constant.OUTPUT_SUCCESS)
-					}
-				}
-			}
-		default:
-			fmt.Println(fmt.Sprintf(constant.SYSTEM_HINT_UNKNOWN_CMD, cmds[0]))
-			usage()
+		}
+
+		if err := cmd.ExecuteWithArgs(cmds); err != nil {
+			fmt.Println(err)
+			fmt.Println("Type 'help' to see available commands.")
+			fmt.Println(constant.OUTPUT_FAILURE)
 		}
 	}
 }

@@ -46,7 +46,7 @@ func TestGetConsoleLoginToken(t *testing.T) {
 	}()
 
 	<-ready
-	time.Sleep(100 * time.Millisecond)
+	time.Sleep(constant.WAIT_TIME)
 
 	for _, testCase := range testGetConsoleLoginTokenCases {
 		t.Run(testCase.name, func(t *testing.T) {

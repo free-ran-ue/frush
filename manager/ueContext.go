@@ -112,7 +112,7 @@ func (c *ueContext) Ping(dn string) error {
 		receiveIcmpReplyChan <- true
 	}()
 
-	time.Sleep(300 * time.Millisecond)
+	time.Sleep(constant.WAIT_TIME)
 
 	icmpEchoPacket, err := util.BuildIcmpEchoPacket(ueIp, dn)
 	if err != nil {
