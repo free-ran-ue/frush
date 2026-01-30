@@ -1,7 +1,15 @@
 package manager
 
 import (
+	"context"
+
 	"github.com/free-ran-ue/free-ran-ue/v2/model"
+)
+
+var (
+	Manager    *manager
+	RootCtx    context.Context
+	RootCancel context.CancelFunc
 )
 
 type manager struct {

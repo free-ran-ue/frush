@@ -18,7 +18,7 @@ const (
 const (
 	OUTPUT_SUCCESS = "==> Success"
 	OUTPUT_FAILURE = "==> Fail"
-	LOG_WAIT_TIME  = 300 * time.Millisecond
+	WAIT_TIME      = 300 * time.Millisecond
 )
 
 const (
