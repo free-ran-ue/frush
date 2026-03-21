@@ -3,15 +3,18 @@ package main
 import (
 	"context"
 	"fmt"
+	"os"
 	"strings"
 	"time"
 
+	"charm.land/lipgloss/v2"
 	"github.com/chzyer/readline"
 	"github.com/free-ran-ue/free-ran-ue/v2/model"
 	"github.com/free-ran-ue/frush/cmd"
 	"github.com/free-ran-ue/frush/constant"
 	"github.com/free-ran-ue/frush/manager"
 	"github.com/free-ran-ue/util"
+	"golang.org/x/term"
 )
 
 func printFrush() {
@@ -57,7 +60,31 @@ func main() {
 	manager.Manager = manager.NewManager(*gnbConfig, *ueConfig)
 	manager.RootCtx, manager.RootCancel = context.WithCancel(context.Background())
 
-	rl, err := readline.New(constant.CMD_START)
+	isTerminal := term.IsTerminal(int(os.Stdin.Fd()))
+	prompt := constant.CMD_START
+	if isTerminal {
+		promptStyle := lipgloss.NewStyle().Foreground(lipgloss.Color("205")).Bold(true)
+		prompt = promptStyle.Render(constant.CMD_START)
+	}
+
+	completer := readline.NewPrefixCompleter(
+		readline.PcItem(constant.CMD_STATUS),
+		readline.PcItem(constant.CMD_GNB),
+		readline.PcItem(constant.CMD_UE_REGISTER),
+		readline.PcItem(constant.CMD_PING),
+		readline.PcItem(constant.CMD_UE_DE_REGISTER),
+		readline.PcItem(constant.CMD_DELETE_SUBSCRIBER),
+		readline.PcItem(constant.CMD_ADD_SUBSCRIBER),
+		readline.PcItem(constant.CMD_EXIT),
+		readline.PcItem(constant.CMD_HELP),
+	)
+
+	config := &readline.Config{
+		Prompt:       prompt,
+		AutoComplete: completer,
+	}
+
+	rl, err := readline.NewEx(config)
 	if err != nil {
 		panic(err)
 	}
