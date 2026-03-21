@@ -56,6 +56,8 @@ jobs:
             echo "=== Expected output ==="
             cat ./test/01-general/expect.txt
             exit 1
+          else
+            echo "01 General Test Passed"
           fi
 
       - name: 02 Duplicate Action Test
@@ -67,6 +69,8 @@ jobs:
             echo "=== Expected output ==="
             cat ./test/02-duplicate-action/expect.txt
             exit 1
+          else
+            echo "02 Duplicate Action Test Passed"
           fi
 
       - name: 03 Invert Action Test
@@ -78,6 +82,8 @@ jobs:
             echo "=== Expected output ==="
             cat ./test/03-invert-action/expect.txt
             exit 1
+          else
+            echo "03 Invert Action Test Passed"
           fi
 
       - name: 04 Direct Exit Test
@@ -89,6 +95,8 @@ jobs:
             echo "=== Expected output ==="
             cat ./test/04-direct-exit/expect.txt
             exit 1
+          else
+            echo "04 Direct Exit Test Passed"
           fi
 
       - name: Clean up free5GC
