@@ -7,7 +7,7 @@ require (
 	github.com/Alonza0314/logger-go/v2 v2.0.5
 	github.com/chzyer/readline v1.5.1
 	github.com/free-ran-ue/free-ran-ue/v2 v2.3.10
-	github.com/free-ran-ue/util v0.0.0
+	github.com/free-ran-ue/util v0.0.1
 	github.com/gin-gonic/gin v1.12.0
 	github.com/spf13/cobra v1.10.2
 	golang.org/x/term v0.41.0
@@ -40,7 +40,7 @@ require (
 	github.com/go-playground/validator/v10 v10.30.1 // indirect
 	github.com/goccy/go-json v0.10.5 // indirect
 	github.com/goccy/go-yaml v1.19.2 // indirect
-	github.com/golang-jwt/jwt/v5 v5.3.0 // indirect
+	github.com/golang-jwt/jwt/v5 v5.3.1 // indirect
 	github.com/inconshreveable/mousetrap v1.1.0 // indirect
 	github.com/json-iterator/go v1.1.12 // indirect
 	github.com/klauspost/cpuid/v2 v2.3.0 // indirect
