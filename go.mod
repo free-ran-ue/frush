@@ -7,7 +7,7 @@ require (
 	github.com/Alonza0314/logger-go/v2 v2.0.5
 	github.com/chzyer/readline v1.5.1
 	github.com/free-ran-ue/free-ran-ue/v2 v2.3.11
-	github.com/free-ran-ue/util v0.0.1
+	github.com/free-ran-ue/util v0.0.3
 	github.com/gin-gonic/gin v1.12.0
 	github.com/spf13/cobra v1.10.2
 	golang.org/x/term v0.41.0
