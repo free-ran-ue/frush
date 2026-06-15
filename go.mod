@@ -7,7 +7,7 @@ require (
 	github.com/Alonza0314/logger-go/v2 v2.0.5
 	github.com/chzyer/readline v1.5.1
 	github.com/free-ran-ue/free-ran-ue/v2 v2.4.2
-	github.com/free-ran-ue/util v0.0.4-0.20260411155520-c372c26326a4
+	github.com/free-ran-ue/util v0.0.4
 	github.com/gin-gonic/gin v1.12.0
 	github.com/spf13/cobra v1.10.2
 	golang.org/x/term v0.44.0
@@ -28,7 +28,7 @@ require (
 	github.com/clipperhouse/uax29/v2 v2.7.0 // indirect
 	github.com/cloudwego/base64x v0.1.6 // indirect
 	github.com/free5gc/aper v1.1.1 // indirect
-	github.com/free5gc/nas v1.2.2 // indirect
+	github.com/free5gc/nas v1.2.3 // indirect
 	github.com/free5gc/ngap v1.1.3 // indirect
 	github.com/free5gc/openapi v1.2.4 // indirect
 	github.com/free5gc/sctp v1.1.2 // indirect
