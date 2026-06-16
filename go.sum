@@ -1,5 +1,5 @@
-charm.land/lipgloss/v2 v2.0.3 h1:yM2zJ4Cf5Y51b7RHIwioil4ApI/aypFXXVHSwlM6RzU=
-charm.land/lipgloss/v2 v2.0.3/go.mod h1:7myLU9iG/3xluAWzpY/fSxYYHCgoKTie7laxk6ATwXA=
+charm.land/lipgloss/v2 v2.0.4 h1:lcPeVtcp23SNra7lHy8iYE4UC2aIipVQ47sbGyyxR5Q=
+charm.land/lipgloss/v2 v2.0.4/go.mod h1:0653x8epbZSzdDfO/XPS1a/uYPOBeSsCssOpJOqDzik=
 github.com/Alonza0314/logger-go/v2 v2.0.5 h1:ZCOHbPEZ4tXrS7PC3ujOKOwILKeRC3sOW1/1ItLECoo=
 github.com/Alonza0314/logger-go/v2 v2.0.5/go.mod h1:fRFP+N39GOCRbuYMDc5PI9KJvzTyxpGNhpyHkIhIsoY=
 github.com/aead/cmac v0.0.0-20160719120800-7af84192f0b1 h1:+JkXLHME8vLJafGhOH4aoV2Iu8bR55nU6iKMVfYVLjY=
