@@ -3,7 +3,7 @@ module github.com/free-ran-ue/frush
 go 1.26.2
 
 require (
-	charm.land/lipgloss/v2 v2.0.3
+	charm.land/lipgloss/v2 v2.0.5
 	github.com/Alonza0314/logger-go/v2 v2.0.5
 	github.com/chzyer/readline v1.5.1
 	github.com/free-ran-ue/free-ran-ue/v2 v2.4.2
