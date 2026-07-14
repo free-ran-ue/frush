@@ -10,7 +10,7 @@ require (
 	github.com/free-ran-ue/util v0.0.4-0.20260411155520-c372c26326a4
 	github.com/gin-gonic/gin v1.12.0
 	github.com/spf13/cobra v1.10.2
-	golang.org/x/term v0.44.0
+	golang.org/x/term v0.45.0
 )
 
 require (
@@ -68,7 +68,7 @@ require (
 	golang.org/x/crypto v0.48.0 // indirect
 	golang.org/x/net v0.51.0 // indirect
 	golang.org/x/sync v0.19.0 // indirect
-	golang.org/x/sys v0.46.0 // indirect
+	golang.org/x/sys v0.47.0 // indirect
 	golang.org/x/text v0.34.0 // indirect
 	google.golang.org/protobuf v1.36.10 // indirect
 	gopkg.in/yaml.v2 v2.4.0 // indirect
